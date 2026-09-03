@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="AutomationBootcamp.Tests/AutomationBootcamp.Tests.csproj" />
+  <Project Path="AutomationBootcamp/AutomationBootcamp.csproj" />
+</Solution>
