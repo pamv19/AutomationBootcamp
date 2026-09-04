@@ -1,6 +1,7 @@
 ﻿using Microsoft.Playwright;
 using NUnit.Framework;
 using System.Runtime.Intrinsics.Arm;
+using System.Security.Cryptography.X509Certificates;
 using static Microsoft.Playwright.Assertions;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -762,6 +763,76 @@ public class LoginPlaywrightTests
             .ToHaveTextAsync("Dashboard opened");
        }
 
+    [Test]
+    public async Task ValidUserShouldCompleteLoginFlowSuccessfully()
+    {
+        ILocator usernameField =
+            _page!.GetByLabel("Username");
+
+        ILocator passwordField =
+            _page!.GetByLabel("Password");
+
+        ILocator rememberMeCheckbox =
+            _page!.GetByRole(
+                AriaRole.Checkbox,
+                new() { Name = "Remember me" }
+                );
+
+        ILocator environmentDropdown =
+          _page!.GetByLabel("Environment");
+
+        ILocator loginButton =
+            _page!.GetByRole(
+                AriaRole.Button,
+                new() {Name = "Login" } 
+                );
+
+        ILocator loginMessage =
+            _page!.GetByText("Login successful");
+
+        await Expect(_page)
+             .ToHaveTitleAsync("Login Page");
+
+        await Expect(usernameField)
+            .ToBeEditableAsync();
+
+        await Expect(passwordField)
+            .ToBeEditableAsync();
+
+        await Expect(rememberMeCheckbox)
+            .Not
+            .ToBeCheckedAsync();
+
+        await Expect(environmentDropdown)
+            .ToHaveValueAsync("");
+
+        await usernameField.FillAsync("pamela");
+        await passwordField.FillAsync("qa123");
+        await rememberMeCheckbox.CheckAsync();
+        await environmentDropdown.SelectOptionAsync("test");
+
+        await Expect(usernameField)
+            .ToHaveValueAsync("pamela");
+
+        await Expect(passwordField)
+            .ToHaveValueAsync("qa123");
+
+        await Expect(rememberMeCheckbox)
+            .ToBeCheckedAsync();
+
+        await Expect(environmentDropdown)
+            .ToHaveValueAsync("test");
+
+        await loginButton.ClickAsync();
+
+        await Expect(loginMessage)
+            .ToHaveTextAsync("Login successful");
+
+        await Expect(loginMessage)
+            .Not
+            .ToContainTextAsync("Invalid");
+
+    }
 
 
     [TearDown]
